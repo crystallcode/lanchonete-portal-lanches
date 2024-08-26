@@ -1,4 +1,4 @@
-// Seleciona os elementos do DOM
+// Variáveis
 const menu = document.getElementById("menu");
 const cartBtn = document.getElementById("cart-btn");
 const cartModal = document.getElementById("cart-modal");
@@ -9,7 +9,6 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const cartCounter = document.getElementById("cart-count");
 const addressInput = document.getElementById("address");
 const addressWarn = document.getElementById("address-warn");
-const pontorefInput = document.getElementById('pontoref');
 const nameuserInput = document.getElementById('nameuser');
 const nameuserWarn = document.getElementById('nameuser-warn');
 const cashamountInput = document.getElementById('cash-amount');
@@ -18,11 +17,11 @@ const trocoWarn = document.getElementById('troco-warn');
 const deliveryFields = document.getElementById('delivery-fields');
 const deliveryMethodRadios = document.querySelectorAll('input[name="delivery-method"]');
 const paymentMethodRadios = document.querySelectorAll('input[name="payment"]');
-const adicionalInput = document.querySelectorAll('input[name="adicional"]');
-const adicionalWarn = document.getElementById('adicional-warn');
 const horarioFuncionamento = document.getElementById('horario-e-dia');
 const opcoesAdicional = document.getElementById('adicionais');
+const adicionalWarn = document.getElementById('adicional-warn');
 const pagamentoWarn = document.getElementById('pagamento-warn');
+const retiradaWarn = document.getElementById('retirada-warn');
 
 // Inicializa o carrinho
 let cart = [];
@@ -163,10 +162,12 @@ cashamountInput.addEventListener("input", function(event){
 // Função para exibir e ocultar as opções de adicionais
 function acrescentarSim() {
     opcoesAdicional.classList.remove('hidden');
+    adicionalWarn.classList.add('hidden'); // Remove o aviso se a opção for escolhida
 }
 
 function acrescentarNao() {
     opcoesAdicional.classList.add('hidden');
+    adicionalWarn.classList.add('hidden'); // Remove o aviso se a opção for escolhida
 }
 
 // Controle de método de entrega (Delivery ou Pickup)
@@ -195,10 +196,31 @@ paymentMethodRadios.forEach(input => {
     });
 });
 
+// Adiciona eventos para os botões de adicionais
+document.querySelectorAll('input[name="adicional"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        adicionalWarn.classList.add('hidden'); // Remove o aviso quando uma opção for selecionada
+    });
+});
+
+deliveryMethodRadios.forEach(input => {
+    input.addEventListener('change', function() {
+        retiradaWarn.classList.add('hidden'); // Remove o aviso quando um método é selecionado
+    });
+});
+
+
+paymentMethodRadios.forEach(input => {
+    input.addEventListener('change', function() {
+        pagamentoWarn.classList.add('hidden'); 
+    });
+});
+
+
 // Finalizar pedidos
-checkoutBtn.addEventListener("click", function(){
+checkoutBtn.addEventListener("click", function() {
     const isOpen = checkRestaurantOpen();
-    if(!isOpen){
+    if (!isOpen) {
         Toastify({
             text: "Ops, o restaurante está fechado no momento",
             duration: 3000,
@@ -213,26 +235,47 @@ checkoutBtn.addEventListener("click", function(){
         return;
     }
 
-    if(cart.length === 0) return;
-    if(nameuserInput.value === ""){
+    if (cart.length === 0) return;
+    
+    // Verifica se a escolha de adicionais foi feita
+    const adicionalSim = document.getElementById('acrescentar-sim').checked;
+    const adicionalNao = document.getElementById('acrescentar-nao').checked;
+
+    if (!adicionalSim && !adicionalNao) {
+        adicionalWarn.classList.remove('hidden');
+        adicionalWarn.classList.add('border-red-500');
+        return;
+    }
+    
+    if (nameuserInput.value === "") {
         nameuserWarn.classList.remove("hidden");
         nameuserWarn.classList.add("border-red-500");
         return;
     }
 
-    if(paymentMethod === 'cash' && cashamountInput.value === ""){
+    // Verifica se um método de retirada foi selecionado
+    const deliveryMethodSelected = document.querySelector('input[name="delivery-method"]:checked');
+    if (!deliveryMethodSelected) {
+        retiradaWarn.classList.remove('hidden');
+        retiradaWarn.classList.add('border-red-500');
+        return;
+    }
+
+
+    // Verifica se um método de pagamento foi selecionado
+    if (!document.querySelector('input[name="payment"]:checked')) {
+        pagamentoWarn.classList.remove('hidden');
+        pagamentoWarn.classList.add('border-red-500');
+        return;
+    }
+
+    if (paymentMethod === 'cash' && cashamountInput.value === "") {
         trocoWarn.classList.remove("hidden");
         trocoWarn.classList.add("border-red-500");
         return;
     }
 
-    if(adicionalInput.value === ''){
-        adicionalWarn.classList.remove('hidden');
-        adicionalWarn.classList.add('border-red-500');
-        return;
-    }
-
-    if(document.getElementById('delivery').checked && addressInput.value === ""){
+    if (document.getElementById('delivery').checked && addressInput.value === "") {
         addressWarn.classList.remove("hidden");
         addressWarn.classList.add("border-red-500");
         return;
@@ -240,15 +283,15 @@ checkoutBtn.addEventListener("click", function(){
     
     const cartItems = cart.map((item) => {
         return (
-            `Pedido: ${item.name}\nQuantidade: (${item.quantity})\nPreço: R$${item.price.toFixed(2)}\n`
+            `${item.name}, Quantidade: (${item.quantity})\nPreço: R$${item.price.toFixed(2)}\n`
         );
     }).join("\n");
 
     const deliveryMethod = document.getElementById('delivery').checked ? "Delivery" : "Consumir/Retirar no local";
     const paymentInfo = paymentMethod === 'cash' ? `Dinheiro, precisa de troco: ${cashamountInput.value}` : "Pix";
 
-    const message = encodeURIComponent(`
-${cartItems} 
+    const msgInicial = 'Olá, gostaria de fazer um pedido!\n\nPedido:\n\n'
+    const message = encodeURIComponent(`${msgInicial} ${cartItems} 
 
 Nome do cliente: ${nameuserInput.value}
 
@@ -272,7 +315,7 @@ function checkRestaurantOpen() {
     const data = new Date();
     const hora = data.getHours();
     const minutos = data.getMinutes();
-    return (hora > 18 || (hora === 18 && minutos >= 1)) && (hora < 23 || (hora === 23 && minutos === 0));
+    return (hora > 11 || (hora === 11 && minutos === 0)) && (hora < 23 || (hora === 23 && minutos === 0));
 }
 
 const spanItem = document.getElementById("date-span");
@@ -285,4 +328,3 @@ if(isOpen){
     spanItem.classList.remove("bg-green-600");
     spanItem.classList.add("bg-red-500");
 }
-
