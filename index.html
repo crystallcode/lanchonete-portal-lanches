@@ -15,7 +15,6 @@
 
     <title>CrystalCode - Lanchonete Portal Lanches</title>
 
-
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"/>
 
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -44,7 +43,7 @@
             <span class="text-white font-medium">RUA SÃO BENTO/ESCURIAL</span>
 
             <div class="bg-green-600 px-4 py-1 rounded-lg mt-5" id="date-span">
-                <span class="text-white font-medium" id="horario-e-dia">FECHADO - 18:00 às 00:00</span>
+                <span class="text-white font-medium" id="horario-e-dia">FECHADO - 18:00 às 23:00</span>
             </div>
         </div>
     </header>
@@ -1343,6 +1342,155 @@
 
         <p class="font-bold mb-6">Total: <span id="cart-total">0.00</span></p>
 
+        <p class="font-bold mb-2">Deseja acrescentar algo no hambúrguer?</p>
+
+        <p class="text-red-500 hidden" id="adicional-warn">Informe se deseja acrescentar algo no lanche!</p>
+
+        <div id="adicional-input" class="flex flex-col gap-4 mb-4">
+
+            <label class="flex items-center gap-2">
+                <input
+                    type="radio"
+                    name="acrescentar"
+                    id="acrescentar-sim"
+                    class="form-radio text-right"
+                    onclick="acrescentarSim()"> Sim
+            </label>
+
+            <label class="flex items-center gap-2" id="label-nao-acrescentar">
+                <input
+                    type="radio"
+                    name="acrescentar"
+                    id="acrescentar-nao"
+                    class="form-radio text-right"
+                    onclick="acrescentarNao()"> Não
+            </label>
+            
+        </div>
+
+        <div id="adicionais" class="hidden">
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Filé - R$ 8.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Filé Adicional"
+                data-price="8.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Bacon - R$ 7.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Bacon Adicional"
+                data-price="7.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Frango - R$ 7.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Frango Adicional"
+                data-price="7.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Calabresa - R$ 7.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Calabresa Adicional"
+                data-price="7.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Coração - R$ 7.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Coração Adicional"
+                data-price="7.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Carne de Hambúrguer - R$ 5.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Carne de Hambúrguer Adicional"
+                data-price="5.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Ovo - R$ 1.50</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Ovo Adicional"
+                data-price="1.50">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Presunto - R$ 1.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Presunto Adicional"
+                data-price="1.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Mussarela - R$ 2.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Mussarela Adicional"
+                data-price="2.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+
+            <!--ADICIONAL ITEM-->
+            <div class="flex items-center gap-2 justify-between mt-3">
+                <p class="font-bold text-lg">Molho Rose - R$ 1.00</p>
+                <button 
+                class="bg-gray-900 px-5 rounded add-to-cart-btn"
+                data-name="Molho Rose Adicional"
+                data-price="1.00">
+                    <i class=" text-white">+</i>
+                </button>
+            </div>
+            <!--FIM ADICIONAL ITEM-->
+        </div>
+
         <div>
             <p class="font-bold mt-3">Digite o seu nome:</p>
             <input
@@ -1391,13 +1539,6 @@
             >
             <p class="text-red-500 hidden" id="address-warn">Digite o seu endereço completo!</p>
 
-            <p class="font-bold mt-3">Ponto de referência:</p>
-            <input
-                type="text"
-                placeholder="Digite o ponto de referência do seu local"
-                id="pontoref"
-                class="w-full border-2 p-1 rounded my-1"
-            >
         </div>
 
         <p class="font-bold mt-3">Observações?</p>
@@ -1439,6 +1580,9 @@
                     id="payment-pix"
                     class="form-radio text-right"> Pix
             </label>
+
+            <p class="text-red-500 hidden" id="pagamento-warn">Selecione a forma de pagamento!</p>
+
         </div>
 
         <div id="pix-section" class="hidden">
