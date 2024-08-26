@@ -1,3 +1,4 @@
+// Seleciona os elementos do DOM
 const menu = document.getElementById("menu");
 const cartBtn = document.getElementById("cart-btn");
 const cartModal = document.getElementById("cart-modal");
@@ -17,8 +18,13 @@ const trocoWarn = document.getElementById('troco-warn');
 const deliveryFields = document.getElementById('delivery-fields');
 const deliveryMethodRadios = document.querySelectorAll('input[name="delivery-method"]');
 const paymentMethodRadios = document.querySelectorAll('input[name="payment"]');
+const adicionalInput = document.querySelectorAll('input[name="adicional"]');
+const adicionalWarn = document.getElementById('adicional-warn');
 const horarioFuncionamento = document.getElementById('horario-e-dia');
+const opcoesAdicional = document.getElementById('adicionais');
+const pagamentoWarn = document.getElementById('pagamento-warn');
 
+// Inicializa o carrinho
 let cart = [];
 let paymentMethod = '';
 
@@ -38,35 +44,50 @@ closeModalBtn.addEventListener("click", function(){
     cartModal.style.display = "none";
 });
 
-menu.addEventListener("click", function(event){
-    let parentButton = event.target.closest(".add-to-cart-btn");
-    if(parentButton){
-        const name = parentButton.getAttribute("data-name");
-        const price = parseFloat(parentButton.getAttribute("data-price"));
+// Adiciona itens ao carrinho
+document.addEventListener("click", function(event) {
+    let target = event.target;
+    
+    // Encontre o botão de adicionar ao carrinho mais próximo
+    while (target && !target.classList.contains("add-to-cart-btn")) {
+        target = target.parentElement;
+    }
+    
+    if (target) {
+        const name = target.getAttribute("data-name");
+        const price = parseFloat(target.getAttribute("data-price"));
+        console.log(`Item adicionado: ${name} - R$${price}`); // Log para depuração
         addToCart(name, price);
     }
 });
 
 // Função para adicionar no carrinho
-function addToCart(name, price){
+function addToCart(name, price) {
+    console.log(`Adicionando ao carrinho: ${name} - R$${price}`); // Log para depuração
+    
+    // Encontra o item existente no carrinho
     const existingItem = cart.find(item => item.name === name);
-    if(existingItem){
+    
+    if (existingItem) {
         // Se o item já existe, aumenta apenas a quantidade +1
         existingItem.quantity += 1;
     } else {
+        // Se o item não existe, adiciona um novo item com quantidade 1
         cart.push({
             name,
             price,
             quantity: 1,
         });
     }
+    
     updateCartModal();
 }
 
 // Atualiza o carrinho
-function updateCartModal(){
+function updateCartModal() {
     cartItemsContainer.innerHTML = "";
     let total = 0;
+    
     cart.forEach(item => {
         const cartItemElement = document.createElement("div");  
         cartItemElement.classList.add("flex", "justify-between", "mb-4", "flex-col");
@@ -85,6 +106,7 @@ function updateCartModal(){
         total += item.price * item.quantity;
         cartItemsContainer.appendChild(cartItemElement);
     });
+    
     cartTotal.textContent = total.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
@@ -94,7 +116,7 @@ function updateCartModal(){
 
 // Função para remover itens do carrinho
 cartItemsContainer.addEventListener("click", function(event) {
-    if(event.target.classList.contains("remove-from-cart-btn")) {
+    if (event.target.classList.contains("remove-from-cart-btn")) {
         const name = event.target.getAttribute("data-name");
         removeItemCart(name);
     }
@@ -102,9 +124,10 @@ cartItemsContainer.addEventListener("click", function(event) {
 
 function removeItemCart(name) {
     const index = cart.findIndex(item => item.name === name);
-    if(index !== -1) {
+    
+    if (index !== -1) {
         const item = cart[index];
-        if(item.quantity > 1) {
+        if (item.quantity > 1) {
             item.quantity -= 1;
         } else {
             cart.splice(index, 1);
@@ -136,6 +159,15 @@ cashamountInput.addEventListener("input", function(event){
         trocoWarn.classList.add("hidden");
     }
 });
+
+// Função para exibir e ocultar as opções de adicionais
+function acrescentarSim() {
+    opcoesAdicional.classList.remove('hidden');
+}
+
+function acrescentarNao() {
+    opcoesAdicional.classList.add('hidden');
+}
 
 // Controle de método de entrega (Delivery ou Pickup)
 deliveryMethodRadios.forEach(input => {
@@ -171,9 +203,9 @@ checkoutBtn.addEventListener("click", function(){
             text: "Ops, o restaurante está fechado no momento",
             duration: 3000,
             close: true,
-            gravity: "top", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
+            gravity: "top",
+            position: "right",
+            stopOnFocus: true,
             style: {
                 background: "#ef4444",
             },
@@ -188,36 +220,40 @@ checkoutBtn.addEventListener("click", function(){
         return;
     }
 
-    if(document.getElementById('delivery').checked && addressInput.value === ""){
-        addressWarn.classList.remove("hidden");
-        addressWarn.classList.add("border-red-500");
-        return;
-    }
-
     if(paymentMethod === 'cash' && cashamountInput.value === ""){
         trocoWarn.classList.remove("hidden");
         trocoWarn.classList.add("border-red-500");
         return;
     }
 
-    // Enviar o pedido para o WhatsApp
+    if(adicionalInput.value === ''){
+        adicionalWarn.classList.remove('hidden');
+        adicionalWarn.classList.add('border-red-500');
+        return;
+    }
+
+    if(document.getElementById('delivery').checked && addressInput.value === ""){
+        addressWarn.classList.remove("hidden");
+        addressWarn.classList.add("border-red-500");
+        return;
+    }
+    
     const cartItems = cart.map((item) => {
         return (
-            `Pedido: ${item.name}\nQuantidade: (${item.quantity})\nPreço: R$${item.price}\n`
+            `Pedido: ${item.name}\nQuantidade: (${item.quantity})\nPreço: R$${item.price.toFixed(2)}\n`
         );
     }).join("\n");
 
     const deliveryMethod = document.getElementById('delivery').checked ? "Delivery" : "Consumir/Retirar no local";
     const paymentInfo = paymentMethod === 'cash' ? `Dinheiro, precisa de troco: ${cashamountInput.value}` : "Pix";
 
-
     const message = encodeURIComponent(`
-${cartItems}
+${cartItems} 
 
 Nome do cliente: ${nameuserInput.value}
 
 Método de retirada: ${deliveryMethod}
-${deliveryMethod === "Delivery" ? `Endereço: ${addressInput.value}\nPonto de referência: ${pontorefInput.value}\n` : ''}
+${deliveryMethod === "Delivery" ? `Endereço: ${addressInput.value}\n` : ''}
 
 Forma de pagamento: ${paymentInfo}
 
@@ -231,11 +267,12 @@ Observações do cliente, caso tenha: '${observacoesInput.value}'
     updateCartModal();
 });
 
+// Verifica se o restaurante está aberto
 function checkRestaurantOpen() {
     const data = new Date();
     const hora = data.getHours();
     const minutos = data.getMinutes();
-    return (hora > 18 || (hora === 18 && minutos >= 1)) && (hora < 24 || (hora === 24 && minutos === 0));
+    return (hora > 11 || (hora === 11 && minutos >= 1)) && (hora < 24 || (hora === 24 && minutos === 0));
 }
 
 const spanItem = document.getElementById("date-span");
