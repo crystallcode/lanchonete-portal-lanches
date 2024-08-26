@@ -261,7 +261,12 @@ checkoutBtn.addEventListener("click", function() {
         return;
     }
 
-
+    if (document.getElementById('delivery').checked && addressInput.value === "") {
+        addressWarn.classList.remove("hidden");
+        addressWarn.classList.add("border-red-500");
+        return;
+    }
+    
     // Verifica se um método de pagamento foi selecionado
     if (!document.querySelector('input[name="payment"]:checked')) {
         pagamentoWarn.classList.remove('hidden');
@@ -272,12 +277,6 @@ checkoutBtn.addEventListener("click", function() {
     if (paymentMethod === 'cash' && cashamountInput.value === "") {
         trocoWarn.classList.remove("hidden");
         trocoWarn.classList.add("border-red-500");
-        return;
-    }
-
-    if (document.getElementById('delivery').checked && addressInput.value === "") {
-        addressWarn.classList.remove("hidden");
-        addressWarn.classList.add("border-red-500");
         return;
     }
     
@@ -315,7 +314,7 @@ function checkRestaurantOpen() {
     const data = new Date();
     const hora = data.getHours();
     const minutos = data.getMinutes();
-    return (hora > 11 || (hora === 11 && minutos >= 0)) && (hora < 23 || (hora === 23 && minutos === 0));
+    return (hora > 18 || (hora === 18 && minutos >= 0)) && (hora < 23 || (hora === 23 && minutos === 0));
 }
 
 const spanItem = document.getElementById("date-span");
