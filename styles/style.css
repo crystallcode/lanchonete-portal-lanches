@@ -65,9 +65,9 @@ html, body {
 }
 
 #adicionais {
-    background-color: antiquewhite;
+    background-color: #faebd7;
     padding: 10px;
-    border: 1px solid antiquewhite;
+    border: 1px solid #faebd7;
     border-radius: 7px;
 }
 
