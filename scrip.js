@@ -279,12 +279,15 @@ checkoutBtn.addEventListener("click", function() {
         trocoWarn.classList.add("border-red-500");
         return;
     }
-    
+
+    //Pedido para o zapzap
     const cartItems = cart.map((item) => {
         return (
             `${item.name}, Quantidade: (${item.quantity})\nPreço: R$${item.price.toFixed(2)}\n`
         );
     }).join("\n");
+
+    const totalCompra = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
     const deliveryMethod = document.getElementById('delivery').checked ? "Delivery" : "Consumir/Retirar no local";
     const paymentInfo = paymentMethod === 'cash' ? `Dinheiro, precisa de troco: ${cashamountInput.value}` : "Pix";
@@ -298,6 +301,8 @@ Método de retirada: ${deliveryMethod}
 ${deliveryMethod === "Delivery" ? `Endereço: ${addressInput.value}\n` : ''}
 
 Forma de pagamento: ${paymentInfo}
+
+Total do pedido: R$${totalCompra.toFixed(2)}
 
 Observações do cliente, caso tenha: '${observacoesInput.value}'
     `);
