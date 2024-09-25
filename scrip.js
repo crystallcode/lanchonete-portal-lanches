@@ -305,6 +305,8 @@ Forma de pagamento: ${paymentInfo}
 Total do pedido: R$${totalCompra.toFixed(2)}
 
 Observações do cliente, caso tenha: '${observacoesInput.value}'
+
+\nFaça novos pedidos em: https://crystalcode-portallanches.vercel.app/
     `);
 
     const phone = "+5579999494492";
